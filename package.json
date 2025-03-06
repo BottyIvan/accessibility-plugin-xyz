@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/BottyIvan/accessibility-plugin-xyz.git"
+    "url": "git+https://github.com/BottyIvan/accessibility-plugin-xyz.git"
   },
   "description": "A lightweight accessibility plugin for web applications",
   "main": "dist/index.js",
