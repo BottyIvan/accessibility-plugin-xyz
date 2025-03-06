@@ -1,0 +1,32 @@
+.accessibility-popup-inline {
+    position: absolute;
+    background-color: black;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 14px;
+    z-index: 1000;
+    display: none;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.accessibility-popup-fixed {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    left: 10px;
+    background-color: black;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 14px;
+    z-index: 1000;
+    display: none;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.highlight {
+    background-color: yellow;
+    color: black;
+    transition: background 0.3s ease;
+}
