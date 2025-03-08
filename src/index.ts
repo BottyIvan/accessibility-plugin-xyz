@@ -1,10 +1,12 @@
-import AccessibilityPopupInline from "./popupInline";
-import AccessibilityPopup from "./popup";
+import AccessibilityPopupInline from "./AccessibilityPopups/popupInline";
+import AccessibilityPopup from "./AccessibilityPopups/popup";
 import initializeSettings from "./utils";
+import SpeechHelper from "./speechHelper";
+import IAccessibilityPlugin from "./Interfaces/IAccessibilityPlugin";
 
-class AccessibilityPlugin {
-  private popupInline?: AccessibilityPopupInline;
-  private popup?: AccessibilityPopup;
+class AccessibilityPlugin implements IAccessibilityPlugin {
+  public popup: AccessibilityPopupInline | AccessibilityPopup;
+  private speech: SpeechHelper;
 
   private static readonly interactiveTags = new Map([
     ["P", "Paragraph"],
@@ -29,9 +31,10 @@ class AccessibilityPlugin {
     const mode = localStorage.getItem("mode") || "fixed";
     document.body.dataset.accessibilityMode = mode;
 
-    this.popupInline =
-      mode === "inline" ? new AccessibilityPopupInline() : undefined;
-    this.popup = mode !== "inline" ? new AccessibilityPopup() : undefined;
+    this.popup =
+      mode === "inline"
+        ? new AccessibilityPopupInline()
+        : new AccessibilityPopup();
 
     this.init();
   }
@@ -40,6 +43,8 @@ class AccessibilityPlugin {
     this.enableTextHighlight();
     this.enableFormGuidance();
     initializeSettings();
+
+    this.speech = new SpeechHelper();
   }
 
   private enableTextHighlight() {
@@ -118,14 +123,14 @@ class AccessibilityPlugin {
   }
 
   private showMessage(message: string, target?: HTMLElement) {
-    this.popupInline?.showMessage(message, target);
-    this.popup?.showMessage(message);
+    this.popup.showMessage(message, target);
+    this.speech.speak(message);
   }
 
   private hideMessage() {
-    this.popupInline?.hide();
-    this.popup?.hide();
+    this.popup.hide();
   }
 }
 
 export { AccessibilityPlugin };
+new AccessibilityPlugin();

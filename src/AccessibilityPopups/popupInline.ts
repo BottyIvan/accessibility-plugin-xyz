@@ -1,5 +1,4 @@
 class AccessibilityPopupInline {
-  
   private readonly popup: HTMLDivElement;
   private fontSize: number = localStorage.getItem("fontSize")
     ? parseInt(localStorage.getItem("fontSize") as string)
@@ -15,41 +14,48 @@ class AccessibilityPopupInline {
 
     window.addEventListener("resize", () => this.updatePosition());
     window.addEventListener("scroll", () => this.updatePosition());
+    this.popup.addEventListener("mouseover", () => this.hide(false));
   }
 
   public showMessage(message: string, target?: HTMLElement) {
     this.popup.textContent = message;
-    this.popup.style.display = "block";
+    this.popup.style.opacity = "1";
+    this.popup.style.visibility = "visible";
 
     if (target) {
       this.updatePosition(target);
     }
   }
 
-  public hide() {
-    this.popup.style.display = "none";
+  public hide(handleMouseOver: boolean = false) {
+    if (handleMouseOver) {
+      return;
+    }
+
+    this.popup.style.opacity = "0";
+    this.popup.style.visibility = "hidden";
+    this.popup.textContent = "";
+    this.popup.style.transform = "translate(0, 0)";
   }
 
-  private updatePosition = (target?: HTMLElement) => {
+  private readonly updatePosition = (target?: HTMLElement) => {
     if (!target) return;
 
     requestAnimationFrame(() => {
-      const rect = target.getBoundingClientRect();
+      const targetRect = target.getBoundingClientRect();
       const popupRect = this.popup.getBoundingClientRect();
-      const top = rect.bottom + window.scrollY;
-      const left = rect.left + window.scrollX;
+      const top = targetRect.bottom + 10;
+      const left = targetRect.left + (targetRect.width - popupRect.width) / 2;
+      const adjustedTop = Math.max(
+        10,
+        Math.min(window.innerHeight - popupRect.height - 10, top)
+      );
+      const adjustedLeft = Math.max(
+        10,
+        Math.min(window.innerWidth - popupRect.width - 10, left)
+      );
 
-      // Ensure the popup is within the window
-      const maxTop = window.innerHeight - 16 - popupRect.height;
-      const maxLeft = window.innerWidth - 16 - popupRect.width;
-      const minTop = 16;
-      const minLeft = 16;
-
-      const adjustedTop = Math.min(Math.max(top, minTop), maxTop);
-      const adjustedLeft = Math.min(Math.max(left, minLeft), maxLeft);
-
-      this.popup.style.top = `${adjustedTop}px`;
-      this.popup.style.left = `${adjustedLeft}px`;
+      this.popup.style.transform = `translate(${adjustedLeft}px, ${adjustedTop}px)`;
     });
   };
 }
