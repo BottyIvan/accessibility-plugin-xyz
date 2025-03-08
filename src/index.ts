@@ -119,6 +119,17 @@ class AccessibilityPlugin implements IAccessibilityPlugin {
 
     if (explanations) message += ` ${explanations}`;
 
+    const attributes = Array.from(input.attributes)
+      .filter(
+        (attr) =>
+          attr.name !== "id" &&
+          attr.name !== "placeholder" &&
+          attr.name !== "class"
+      )
+      .map((attr) => `${attr.name}="${attr.value}"`)
+      .join(",");
+    if (attributes) message += ` (Attributes: ${attributes})`;
+
     this.showMessage(message, input);
   }
 
