@@ -3,10 +3,12 @@ import AccessibilityPopup from "./AccessibilityPopups/popup";
 import initializeSettings from "./utils";
 import SpeechHelper from "./speechHelper";
 import IAccessibilityPlugin from "./Interfaces/IAccessibilityPlugin";
+import Handler from "./Handlers";
 
 class AccessibilityPlugin implements IAccessibilityPlugin {
   public popup: AccessibilityPopupInline | AccessibilityPopup;
   private speech: SpeechHelper;
+  private handler: Handler;
 
   private static readonly interactiveTags = new Map([
     ["P", "Paragraph"],
@@ -35,6 +37,8 @@ class AccessibilityPlugin implements IAccessibilityPlugin {
       mode === "inline"
         ? new AccessibilityPopupInline()
         : new AccessibilityPopup();
+
+    this.handler = new Handler();
 
     this.init();
   }
@@ -78,59 +82,28 @@ class AccessibilityPlugin implements IAccessibilityPlugin {
   private enableFormGuidance() {
     document
       .querySelectorAll<
-        HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-      >("input, textarea, select")
+        | HTMLInputElement
+        | HTMLTextAreaElement
+        | HTMLSelectElement
+        | HTMLButtonElement
+      >("input, textarea, select, button")
       .forEach((input) => {
-        input.addEventListener("focus", () => this.handleFocus(input), {
-          passive: true,
-        });
+        input.addEventListener(
+          "focus",
+          () => {
+            const message = this.handler.handleFocus(input);
+            if (message) {
+              this.showMessage(message, input);
+            }
+          },
+          {
+            passive: true,
+          }
+        );
         input.addEventListener("blur", this.hideMessage.bind(this), {
           passive: true,
         });
       });
-  }
-
-  private handleFocus(
-    input: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-  ) {
-    const label = document.querySelector<HTMLLabelElement>(
-      `label[for="${input.id}"]`
-    );
-    let message =
-      ((input instanceof HTMLInputElement ||
-        input instanceof HTMLTextAreaElement) &&
-        input.placeholder.trim()) ||
-      label?.textContent?.trim() ||
-      "Please fill out this field";
-
-    const ariaMessages = new Map([
-      ["aria-required", "⚠️ Required field."],
-      ["aria-invalid", "❌ The entered value is not valid."],
-      ["aria-describedby", "ℹ️ Additional information available."],
-      ["aria-labelledby", "🔖 This field has an associated label."],
-      ["aria-disabled", "🚫 This field is disabled."],
-      ["aria-readonly", "🔒 This field is read-only."],
-    ]);
-
-    const explanations = [...ariaMessages]
-      .filter(([attr]) => input.hasAttribute(attr))
-      .map(([, msg]) => msg)
-      .join(" ");
-
-    if (explanations) message += ` ${explanations}`;
-
-    const attributes = Array.from(input.attributes)
-      .filter(
-        (attr) =>
-          attr.name !== "id" &&
-          attr.name !== "placeholder" &&
-          attr.name !== "class"
-      )
-      .map((attr) => `${attr.name}="${attr.value}"`)
-      .join(",");
-    if (attributes) message += ` (Attributes: ${attributes})`;
-
-    this.showMessage(message, input);
   }
 
   private showMessage(message: string, target?: HTMLElement) {
