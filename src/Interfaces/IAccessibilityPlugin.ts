@@ -1,9 +1,8 @@
-import AccessibilityPopup from "../AccessibilityPopups/popup";
-import AccessibilityPopupInline from "../AccessibilityPopups/popupInline";
+import AccessibilityPopupFixed from "../AccessibilityPopups/AccessibilityPopupFixed";
+import AccessibilityPopupInline from "../AccessibilityPopups/AccessibilityPopupInline";
 
 interface IAccessibilityPlugin {
-  popup?: AccessibilityPopupInline | AccessibilityPopup;
-  
+  popup?: AccessibilityPopupInline | AccessibilityPopupFixed;
 }
 
 export default IAccessibilityPlugin;
