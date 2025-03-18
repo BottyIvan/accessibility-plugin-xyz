@@ -1,11 +1,12 @@
 import AccessibilityPopupInline from "./AccessibilityPopups/popupInline";
 import AccessibilityPopup from "./AccessibilityPopups/popup";
-import initializeSettings from "./utils";
+import AccessibilitySettings from "./AccessibilitySettings";
 import SpeechHelper from "./speechHelper";
 import IAccessibilityPlugin from "./Interfaces/IAccessibilityPlugin";
 import Handler from "./Handlers";
 
 class AccessibilityPlugin implements IAccessibilityPlugin {
+  public settings: AccessibilitySettings;
   public popup: AccessibilityPopupInline | AccessibilityPopup;
   private speech: SpeechHelper;
   private handler: Handler;
@@ -39,15 +40,13 @@ class AccessibilityPlugin implements IAccessibilityPlugin {
         : new AccessibilityPopup();
 
     this.handler = new Handler();
+    this.settings = new AccessibilitySettings();
 
     this.init();
   }
 
   private init() {
     this.enableTextHighlight();
-    this.enableFormGuidance();
-    initializeSettings();
-
     this.speech = new SpeechHelper();
   }
 
@@ -62,10 +61,27 @@ class AccessibilityPlugin implements IAccessibilityPlugin {
 
   private handleMouseOver(event: MouseEvent) {
     const target = event.target as HTMLElement;
-    if (target && AccessibilityPlugin.interactiveTags.has(target.tagName)) {
+
+    if (!target) {
+      return;
+    }
+
+    if (
+      target instanceof HTMLButtonElement ||
+      target instanceof HTMLInputElement ||
+      target instanceof HTMLSelectElement
+    ) {
+      const message = this.handler.handleFocus(target);
+      if (message) {
+        this.showMessage(message, target);
+      }
+      return;
+    }
+
+    if (AccessibilityPlugin.interactiveTags.has(target.tagName)) {
       const message = `${AccessibilityPlugin.interactiveTags.get(
         target.tagName
-      )}: ${target.textContent}`;
+      )}: ${target.textContent?.trim()}`;
       this.showMessage(message, target);
       target.classList.add("highlight");
     }
@@ -77,33 +93,6 @@ class AccessibilityPlugin implements IAccessibilityPlugin {
       this.hideMessage();
       target.classList.remove("highlight");
     }
-  }
-
-  private enableFormGuidance() {
-    document
-      .querySelectorAll<
-        | HTMLInputElement
-        | HTMLTextAreaElement
-        | HTMLSelectElement
-        | HTMLButtonElement
-      >("input, textarea, select, button")
-      .forEach((input) => {
-        input.addEventListener(
-          "focus",
-          () => {
-            const message = this.handler.handleFocus(input);
-            if (message) {
-              this.showMessage(message, input);
-            }
-          },
-          {
-            passive: true,
-          }
-        );
-        input.addEventListener("blur", this.hideMessage.bind(this), {
-          passive: true,
-        });
-      });
   }
 
   private showMessage(message: string, target?: HTMLElement) {
