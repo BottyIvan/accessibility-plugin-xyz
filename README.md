@@ -8,6 +8,7 @@ This project is an accessibility plugin that enhances the usability of your webs
 - **Display Mode**: Allows choosing between a fixed bottom display or an inline display.
 - **Text Highlighting**: Highlights interactive elements when the user hovers over them.
 - **Form Guide**: Provides guidance messages when users interact with form fields.
+- **Text-to-Speech**: Reads out loud the text content of interactive elements.
 
 ## Installation
 
@@ -33,6 +34,16 @@ To start the development environment, run:
 
 ```bash
 npm run dev
+```
+
+### Import and Use the Plugin
+
+To use the plugin in your project, import it and initialize it as follows:
+
+```ts
+import { AccessibilityPlugin } from 'accessibility-plugin-xyz';
+
+const plugin = new AccessibilityPlugin('inline'); // or 'fixed'
 ```
 
 ### Production Build
