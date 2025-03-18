@@ -30,9 +30,11 @@ class AccessibilityPlugin implements IAccessibilityPlugin {
     ["TH", "Table header cell"],
   ]);
 
-  constructor() {
-    const mode = localStorage.getItem("mode") || "fixed";
-    document.body.dataset.accessibilityMode = mode;
+  constructor(mode: "inline" | "fixed" = "fixed") {
+    if (localStorage.getItem("mode") === null) {
+      localStorage.setItem("mode", mode);
+    }
+    document.body.setAttribute("data-accessibility-mode", mode);
 
     this.popup =
       mode === "inline"
@@ -106,4 +108,3 @@ class AccessibilityPlugin implements IAccessibilityPlugin {
 }
 
 export { AccessibilityPlugin };
-new AccessibilityPlugin();
