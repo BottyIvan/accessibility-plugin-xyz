@@ -1,5 +1,5 @@
-import AccessibilityPopupInline from "./AccessibilityPopups/popupInline";
-import AccessibilityPopup from "./AccessibilityPopups/popup";
+import AccessibilityPopupInline from "./AccessibilityPopups/AccessibilityPopupInline";
+import AccessibilityPopupFixed from "./AccessibilityPopups/AccessibilityPopupFixed";
 import AccessibilitySettings from "./AccessibilitySettings";
 import SpeechHelper from "./speechHelper";
 import IAccessibilityPlugin from "./Interfaces/IAccessibilityPlugin";
@@ -7,7 +7,7 @@ import Handler from "./Handlers";
 
 class AccessibilityPlugin implements IAccessibilityPlugin {
   public settings: AccessibilitySettings;
-  public popup: AccessibilityPopupInline | AccessibilityPopup;
+  public popup: AccessibilityPopupInline | AccessibilityPopupFixed;
   private speech: SpeechHelper;
   private handler: Handler;
 
@@ -37,7 +37,7 @@ class AccessibilityPlugin implements IAccessibilityPlugin {
     this.popup =
       mode === "inline"
         ? new AccessibilityPopupInline()
-        : new AccessibilityPopup();
+        : new AccessibilityPopupFixed();
 
     this.handler = new Handler();
     this.settings = new AccessibilitySettings();

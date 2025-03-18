@@ -1,17 +1,15 @@
-class AccessibilityPopup {
-  
-  private readonly popup: HTMLDivElement;
-  private fontSize: number = localStorage.getItem("fontSize")
+class AccessibilityPopupBase {
+  protected readonly popup: HTMLDivElement;
+  protected fontSize: number = localStorage.getItem("fontSize")
     ? parseInt(localStorage.getItem("fontSize") as string)
     : 16;
 
-  constructor() {
+  constructor(className: string) {
     this.popup = document.createElement("div");
-    this.popup.className = "accessibility-popup-fixed";
+    this.popup.className = className;
     this.popup.setAttribute("role", "alert");
     this.popup.setAttribute("aria-live", "assertive");
     this.popup.style.fontSize = `${this.fontSize}px`;
-    document.body.appendChild(this.popup);
     document.body.appendChild(this.popup);
   }
 
@@ -25,4 +23,4 @@ class AccessibilityPopup {
   }
 }
 
-export default AccessibilityPopup;
+export default AccessibilityPopupBase;

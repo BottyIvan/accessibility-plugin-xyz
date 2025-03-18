@@ -1,24 +1,15 @@
-class AccessibilityPopupInline {
-  private readonly popup: HTMLDivElement;
-  private fontSize: number = localStorage.getItem("fontSize")
-    ? parseInt(localStorage.getItem("fontSize") as string)
-    : 16;
+import AccessibilityPopupBase from "./AccessibilityPopupBase";
 
+class AccessibilityPopupInline extends AccessibilityPopupBase {
   constructor() {
-    this.popup = document.createElement("div");
-    this.popup.className = "accessibility-popup-inline";
-    this.popup.setAttribute("role", "alert");
-    this.popup.setAttribute("aria-live", "assertive");
-    this.popup.style.fontSize = `${this.fontSize}px`;
-    document.body.appendChild(this.popup);
-
+    super("accessibility-popup-inline");
     window.addEventListener("resize", () => this.updatePosition());
     window.addEventListener("scroll", () => this.updatePosition());
-    this.popup.addEventListener("mouseover", () => this.hide(false));
+    this.popup.addEventListener("mouseover", () => this.hide());
   }
 
   public showMessage(message: string, target?: HTMLElement) {
-    this.popup.textContent = message;
+    super.showMessage(message);
     this.popup.style.opacity = "1";
     this.popup.style.visibility = "visible";
 
@@ -27,18 +18,14 @@ class AccessibilityPopupInline {
     }
   }
 
-  public hide(handleMouseOver: boolean = false) {
-    if (handleMouseOver) {
-      return;
-    }
-
+  public hide() {
     this.popup.style.opacity = "0";
     this.popup.style.visibility = "hidden";
     this.popup.textContent = "";
     this.popup.style.transform = "translate(0, 0)";
   }
 
-  private readonly updatePosition = (target?: HTMLElement) => {
+  private updatePosition(target?: HTMLElement) {
     if (!target) return;
 
     requestAnimationFrame(() => {
@@ -57,7 +44,7 @@ class AccessibilityPopupInline {
 
       this.popup.style.transform = `translate(${adjustedLeft}px, ${adjustedTop}px)`;
     });
-  };
+  }
 }
 
 export default AccessibilityPopupInline;
